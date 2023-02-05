@@ -2,6 +2,7 @@ package dev.jlkesh.java_telegram_bots.utils.factory;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.jlkesh.java_telegram_bots.utils.BaseUtils;
 
@@ -44,5 +45,13 @@ public class InlineKeyboardMarkupFactory {
         SendMessage sendMessage = new SendMessage(chatID, message);
         sendMessage.replyMarkup(enterPasswordKeyboard());
         return sendMessage;
+    }
+
+    public static InlineKeyboardMarkup getFileTypeKeyboard() {
+        return new InlineKeyboardMarkup(
+                getInlineButton("JSON", "json"),
+                getInlineButton("CSV", "csv"),
+                getInlineButton("SQL", "sql")
+        );
     }
 }

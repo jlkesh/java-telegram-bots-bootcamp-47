@@ -22,8 +22,10 @@ public class InitializerConfiguration {
         } else {
             List<UserDomain> users = response.getBody();
             users.forEach((user) -> {
-                userState.put(user.getChatID(), DefaultState.NO_ACTION);
-                CompletableFuture.runAsync(() -> TelegramBotConfiguration.get().execute(SendMessageFactory.sendMessageWithMainMenu(user.getChatID(), "Fell Free To use bla")));
+                userState.put(user.getChatID(), DefaultState.MAIN_STATE);
+                CompletableFuture.runAsync(() -> TelegramBotConfiguration.get().execute(
+                        SendMessageFactory.sendMessageWithMainMenu(user.getChatID(), "Fell Free To use bla", user.getLanguage()))
+                );
             });
         }
     }

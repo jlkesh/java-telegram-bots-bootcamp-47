@@ -28,6 +28,7 @@ public class UserService {
             return new Response<>(null);
         } catch (SQLException e) {
             // TODO: 05/02/23 log
+            e.printStackTrace();
             return new Response<>("Something is wrong try later again", BaseUtils.getStackStraceAsString(e));
         }
     }
@@ -37,6 +38,7 @@ public class UserService {
             return new Response<>(userDao.findAll());
         } catch (SQLException e) {
             // TODO: 05/02/23 log
+            e.printStackTrace();
             return new Response<>(e.getMessage(), BaseUtils.getStackStraceAsString(e));
         }
     }

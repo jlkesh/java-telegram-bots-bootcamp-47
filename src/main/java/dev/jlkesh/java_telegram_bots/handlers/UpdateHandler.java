@@ -17,8 +17,6 @@ public class UpdateHandler {
                         messageHandler.get().handle(update);
                     else if ( Objects.nonNull(update.callbackQuery()) )
                         callbackHandler.get().handle(update);
-                    else
-                        clearHandler.get().handle(update);
                 });
             }
         });

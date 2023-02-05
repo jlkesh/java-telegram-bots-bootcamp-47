@@ -17,6 +17,7 @@ public class UserDomain {
     private String username;
     private String password;
     private String firstName;
+    private String language;
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Asia/Tashkent"));
 }

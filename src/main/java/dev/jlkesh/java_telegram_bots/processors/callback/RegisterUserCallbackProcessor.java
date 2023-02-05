@@ -1,14 +1,17 @@
-package dev.jlkesh.java_telegram_bots.processors;
+package dev.jlkesh.java_telegram_bots.processors.callback;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.jlkesh.java_telegram_bots.config.TelegramBotConfiguration;
 import dev.jlkesh.java_telegram_bots.domains.UserDomain;
 import dev.jlkesh.java_telegram_bots.dto.Dictionary;
 import dev.jlkesh.java_telegram_bots.dto.Response;
+import dev.jlkesh.java_telegram_bots.processors.Processor;
 import dev.jlkesh.java_telegram_bots.state.DefaultState;
 import dev.jlkesh.java_telegram_bots.state.RegistrationState;
 import dev.jlkesh.java_telegram_bots.utils.factory.AnswerCallbackQueryFactory;
@@ -25,23 +28,27 @@ public class RegisterUserCallbackProcessor implements Processor<RegistrationStat
         CallbackQuery callbackQuery = update.callbackQuery();
         Message message = callbackQuery.message();
         int messageId = message.messageId();
-        Long chatID = callbackQuery.message().chat().id();
+        Chat chat = callbackQuery.message().chat();
+        Long chatID = chat.id();
         String data = callbackQuery.data();
 
-        Dictionary<String, String> dictionary = collected.get(chatID);
-        String password = dictionary.get("password", "");
+        Dictionary<String, Object> dictionary = collected.get(chatID);
+        String password = (String) dictionary.get("password", "");
+        String language = (String) dictionary.get("language", "en");
         if ( data.equals("done") ) {
             if ( password.length() == 4 ) {
                 UserDomain domain = UserDomain.builder()
                         .chatID(chatID)
-                        .username(dictionary.get("username"))
+                        .username((String) dictionary.get("username"))
                         .password(password)
                         .firstName(message.chat().firstName())
+                        .language((String) dictionary.get("language"))
                         .build();
                 Response<Void> response = userService.get().create(domain);
                 if ( response.isSuccess() ) {
-                    userState.put(chatID, DefaultState.NO_ACTION);
-                    bot.execute(SendMessageFactory.sendMessageWithMainMenu(chatID, "Fell Free To use bla"));
+                    userState.put(chatID, DefaultState.MAIN_STATE);
+                    bot.execute(SendMessageFactory.sendMessageWithMainMenu(chatID, "Fell Free To use bla", language));
+                    bot.execute(new DeleteMessage(chatID, messageId));
                 } else {
                     bot.execute(new SendMessage(chatID, response.getFriendlyErrorMessage()));
                     userState.remove(chatID);

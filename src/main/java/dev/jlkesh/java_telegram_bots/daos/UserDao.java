@@ -16,17 +16,18 @@ public class UserDao extends Dao {
 
     public void save(@NonNull UserDomain domain) throws SQLException {
         Connection connection = getConnection();
-        PreparedStatement pst = connection.prepareStatement("insert into users(chatid,username, password, firstname) values(?,?,?,?);");
+        PreparedStatement pst = connection.prepareStatement("insert into users(chatid,username, password, firstname,language) values(?,?,?,?,?);");
         pst.setLong(1, domain.getChatID());
         pst.setString(2, domain.getUsername());
         pst.setString(3, domain.getPassword());
         pst.setString(4, domain.getFirstName());
+        pst.setString(5, domain.getLanguage());
         pst.execute();
     }
 
     public List<UserDomain> findAll() throws SQLException {
         Connection connection = getConnection();
-        PreparedStatement pst = connection.prepareStatement("select chatid, username, firstname, createdat from users");
+        PreparedStatement pst = connection.prepareStatement("select chatid, username, firstname, createdat, language from users");
         ResultSet rs = pst.executeQuery();
         ArrayList<UserDomain> userDomains = new ArrayList<>();
         while ( rs.next() ) {
@@ -35,6 +36,7 @@ public class UserDao extends Dao {
                     .username(rs.getString("username"))
                     .firstName(rs.getString("firstname"))
                     .createdAt(rs.getTimestamp("createdat").toLocalDateTime())
+                    .language(rs.getString("language"))
                     .build());
         }
         return userDomains;
